@@ -3,6 +3,7 @@ import { View, Image, StyleSheet, Text } from "react-native";
 import { COLORS } from "@src/color";
 import { PrimaryButton, Title } from "@src/components";
 import { GameOverScreenProps } from "@src/types";
+import { getDeviceWidth } from "@src/utils";
 
 export default function GameOverScreen({
   navigation,
@@ -41,9 +42,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   imageContainer: {
-    width: 300,
-    height: 300,
-    borderRadius: 150,
+    width: getDeviceWidth() < 380 ? 150 : 300,
+    height: getDeviceWidth() < 380 ? 150 : 300,
+    borderRadius: getDeviceWidth() < 350 ? 75 : 150,
     borderWidth: 3,
     borderColor: COLORS.primary800,
     overflow: "hidden",

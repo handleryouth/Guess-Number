@@ -1,5 +1,10 @@
 import React, { ReactNode } from "react";
-import { ImageBackground, StyleSheet } from "react-native";
+import {
+  ImageBackground,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { COLORS } from "@src/color";
 
@@ -9,23 +14,32 @@ export interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   return (
-    <LinearGradient
-      colors={[COLORS.primary700, COLORS.accent500]}
-      style={styles.rootScreen}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.keyboardContainer}
     >
-      <ImageBackground
-        source={require("../../../assets/images/background.png")}
-        resizeMode="cover"
+      <LinearGradient
+        colors={[COLORS.primary700, COLORS.accent500]}
         style={styles.rootScreen}
-        imageStyle={styles.backgroundImage}
       >
-        {children}
-      </ImageBackground>
-    </LinearGradient>
+        <ImageBackground
+          source={require("../../../assets/images/background.png")}
+          resizeMode="cover"
+          style={styles.rootScreen}
+          imageStyle={styles.backgroundImage}
+        >
+          {children}
+        </ImageBackground>
+      </LinearGradient>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
+  keyboardContainer: {
+    flex: 1,
+  },
+
   rootScreen: {
     flex: 1,
   },
