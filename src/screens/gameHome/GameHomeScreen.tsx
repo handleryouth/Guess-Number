@@ -4,25 +4,26 @@ import {
   View,
   StyleSheet,
   Alert,
-  useWindowDimensions,
   KeyboardAvoidingView,
   ScrollView,
+  useWindowDimensions,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { GameHomeScreenProps } from "@src/types";
 import { COLORS } from "@src/color";
 import { Card, Instruction, PrimaryButton, Title } from "@src/components";
+import { horizontalScale, useDimensions } from "@src/utils";
 
 export default function GameHomeScreen({ navigation }: GameHomeScreenProps) {
   const [enteredNumber, setEnteredNumber] = useState("");
+
+  const { verticalScale } = useDimensions();
 
   const { height } = useWindowDimensions();
 
   const resetInputHandler = useCallback(() => {
     setEnteredNumber("");
   }, []);
-
-  const marginTop = height < 380 ? 5500 : 100;
 
   useFocusEffect(resetInputHandler);
 
@@ -52,12 +53,30 @@ export default function GameHomeScreen({ navigation }: GameHomeScreenProps) {
   return (
     <ScrollView style={styles.screen}>
       <KeyboardAvoidingView behavior="position" style={styles.screen}>
-        <View style={[styles.rootContainer, { marginTop: marginTop }]}>
+        <View
+          style={[
+            styles.rootContainer,
+            {
+              height,
+              rowGap: verticalScale(30),
+              marginHorizontal: horizontalScale(30),
+            },
+          ]}
+        >
           <Title>Guess my number !</Title>
-          <Card>
+          <Card
+            style={{
+              rowGap: 30,
+            }}
+          >
             <Instruction>Enter a number</Instruction>
             <TextInput
-              style={styles.numberInput}
+              style={[
+                styles.numberInput,
+                {
+                  fontSize: height > 430 ? 50 : 40,
+                },
+              ]}
               maxLength={2}
               keyboardType="number-pad"
               onChangeText={(text) => {
@@ -68,14 +87,16 @@ export default function GameHomeScreen({ navigation }: GameHomeScreenProps) {
               value={enteredNumber}
             />
             <View style={styles.buttonsContainer}>
-              <View style={styles.buttonContainer}>
-                <PrimaryButton onPress={resetInputHandler}>Reset</PrimaryButton>
-              </View>
-              <View style={styles.buttonContainer}>
-                <PrimaryButton onPress={confirmInputHandler}>
-                  Confirm
-                </PrimaryButton>
-              </View>
+              <PrimaryButton style={styles.button} onPress={resetInputHandler}>
+                Reset
+              </PrimaryButton>
+
+              <PrimaryButton
+                style={styles.button}
+                onPress={confirmInputHandler}
+              >
+                Confirm
+              </PrimaryButton>
             </View>
           </Card>
         </View>
@@ -91,22 +112,22 @@ const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
     alignItems: "center",
+    justifyContent: "center",
   },
   numberInput: {
-    height: 50,
-    fontSize: 32,
+    fontSize: 22,
     borderBottomColor: COLORS.accent500,
     borderBottomWidth: 2,
     color: COLORS.accent500,
-    marginVertical: 8,
     fontWeight: "bold",
-    width: 50,
+    width: 100,
     textAlign: "center",
   },
   buttonsContainer: {
     flexDirection: "row",
+    columnGap: 12,
   },
-  buttonContainer: {
+  button: {
     flex: 1,
   },
 });

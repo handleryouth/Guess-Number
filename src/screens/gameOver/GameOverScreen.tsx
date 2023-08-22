@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Image, StyleSheet, Text } from "react-native";
+import {
+  View,
+  Image,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+} from "react-native";
 import { COLORS } from "@src/color";
 import { PrimaryButton, Title } from "@src/components";
 import { GameOverScreenProps } from "@src/types";
@@ -10,13 +16,34 @@ export default function GameOverScreen({
   route,
 }: GameOverScreenProps) {
   const { roundsNumber, userNumber } = route.params;
+
+  const { height } = useWindowDimensions();
+
   return (
-    <View style={styles.rootContainer}>
+    <View
+      style={[
+        styles.rootContainer,
+        {
+          rowGap: height < 500 ? 10 : 25,
+        },
+      ]}
+    >
       <Title>Game Over!</Title>
 
-      <View style={styles.imageContainer}>
+      <View
+        style={[
+          styles.imageContainer,
+          { width: height < 500 ? 150 : 300, height: height < 500 ? 150 : 300 },
+        ]}
+      >
         <Image
-          style={styles.image}
+          style={[
+            styles.image,
+            {
+              width: height < 500 ? 150 : 300,
+              height: height < 500 ? 150 : 300,
+            },
+          ]}
           source={require("@assets/images/success.png")}
         />
       </View>
@@ -40,15 +67,13 @@ const styles = StyleSheet.create({
     padding: 24,
     justifyContent: "center",
     alignItems: "center",
+    rowGap: 10,
   },
   imageContainer: {
-    width: getDeviceWidth() < 380 ? 150 : 300,
-    height: getDeviceWidth() < 380 ? 150 : 300,
     borderRadius: getDeviceWidth() < 350 ? 75 : 150,
     borderWidth: 3,
     borderColor: COLORS.primary800,
     overflow: "hidden",
-    margin: 36,
   },
   image: {
     width: "100%",
@@ -58,7 +83,6 @@ const styles = StyleSheet.create({
     fontFamily: "open-sans",
     fontSize: 24,
     textAlign: "center",
-    marginBottom: 24,
   },
   highlight: {
     fontFamily: "open-sans-bold",

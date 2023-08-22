@@ -1,24 +1,32 @@
 import React, { useCallback, useState, useEffect } from "react";
-import { View, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Alert,
+  useWindowDimensions,
+  Modal,
+} from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { Card, Instruction, PrimaryButton, Title } from "@src/components";
-import { BoundariesStateProps, GameScreenProps } from "@src/types";
+import { GameScreenProps } from "@src/types";
 import { generateRandomBetween } from "@src/utils";
-import { LoggingContainer, NumberContainer } from "./components";
-
-export const MINIMUM_BOUNDARIES = 1;
-export const MAXIMUM_BOUNDARIES = 100;
-
-export const BOUNDARIES_INTIAL_STATE: BoundariesStateProps = {
-  max: MAXIMUM_BOUNDARIES,
-  min: MINIMUM_BOUNDARIES,
-};
+import { COLORS } from "@src/color";
+import { BOUNDARIES_INTIAL_STATE } from "@src/const";
+import {
+  LoggingContainer,
+  NumberContainer,
+  SmallNumberContainer,
+} from "./components";
 
 export default function GameStartScreen({
   route,
   navigation,
 }: GameScreenProps) {
   const { inputNumber } = route.params;
+
+  const [showModal, setShowModal] = useState(false);
+
+  const { height } = useWindowDimensions();
 
   const [guessRounds, setGuessRounds] = useState<number[]>([]);
 
@@ -79,28 +87,56 @@ export default function GameStartScreen({
 
   return (
     <View style={styles.screen}>
-      <Title>Opponent's Guess</Title>
-      <NumberContainer>{currentGuess.toString()}</NumberContainer>
-      <Card>
-        <Instruction style={styles.instructionText}>
-          Higher or lower ?
-        </Instruction>
-
-        <View style={styles.buttonsContainer}>
-          <View style={styles.buttonContainer}>
-            <PrimaryButton onPress={() => getNextGuess("lower")}>
-              <FontAwesome name="minus" />
-            </PrimaryButton>
-          </View>
-
-          <View style={styles.buttonContainer}>
-            <PrimaryButton onPress={() => getNextGuess("greater")}>
-              <FontAwesome name="plus" />
-            </PrimaryButton>
-          </View>
+      <Modal
+        onRequestClose={() => setShowModal(false)}
+        animationType="slide"
+        visible={showModal}
+      >
+        <View
+          style={{
+            height: 430,
+            backgroundColor: COLORS.primary700,
+          }}
+        >
+          <LoggingContainer dataNumber={guessRounds} />
         </View>
+      </Modal>
+      <Title>Opponent's Guess</Title>
+      {height > 430 && (
+        <NumberContainer>{currentGuess.toString()}</NumberContainer>
+      )}
+      <Card style={[styles.card, { width: height > 350 ? "100%" : 200 }]}>
+        <Instruction>Higher or lower ?</Instruction>
+
+        {height <= 430 ? (
+          <SmallNumberContainer
+            guessedNumber={currentGuess}
+            onMinus={() => getNextGuess("lower")}
+            onPlus={() => getNextGuess("greater")}
+          />
+        ) : (
+          <View style={styles.buttonsContainer}>
+            <View style={styles.buttonContainer}>
+              <PrimaryButton onPress={() => getNextGuess("lower")}>
+                <FontAwesome name="minus" />
+              </PrimaryButton>
+            </View>
+
+            <View style={styles.buttonContainer}>
+              <PrimaryButton onPress={() => getNextGuess("greater")}>
+                <FontAwesome name="plus" />
+              </PrimaryButton>
+            </View>
+          </View>
+        )}
       </Card>
-      <LoggingContainer dataNumber={guessRounds} />
+      {height < 430 ? (
+        <PrimaryButton onPress={() => setShowModal(true)}>
+          Show Log
+        </PrimaryButton>
+      ) : (
+        <LoggingContainer dataNumber={guessRounds} />
+      )}
     </View>
   );
 }
@@ -109,10 +145,9 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     padding: 12,
+    rowGap: 20,
   },
-  instructionText: {
-    marginBottom: 12,
-  },
+
   title: {
     fontSize: 24,
     fontWeight: "bold",
@@ -124,8 +159,12 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     flexDirection: "row",
+    columnGap: 12,
   },
   buttonContainer: {
     flex: 1,
+  },
+  card: {
+    rowGap: 12,
   },
 });

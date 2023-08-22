@@ -1,15 +1,20 @@
-import React, { ReactNode } from "react";
+import React, { ComponentProps, ReactNode } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { COLORS } from "@src/color";
 
-export interface PrimaryButtonProps {
+export interface PrimaryButtonProps extends ComponentProps<typeof View> {
   children: ReactNode;
   onPress: () => void;
 }
 
-function PrimaryButton({ children, onPress }: PrimaryButtonProps) {
+export default function PrimaryButton({
+  children,
+  onPress,
+  style,
+  ...props
+}: PrimaryButtonProps) {
   return (
-    <View style={styles.buttonOuterContainer}>
+    <View {...props} style={[styles.buttonOuterContainer, style]}>
       <Pressable
         onPress={onPress}
         style={styles.buttonInnerContainer}
@@ -23,18 +28,14 @@ function PrimaryButton({ children, onPress }: PrimaryButtonProps) {
   );
 }
 
-export default PrimaryButton;
-
 const styles = StyleSheet.create({
   buttonOuterContainer: {
     borderRadius: 28,
-    margin: 4,
     overflow: "hidden",
   },
   buttonInnerContainer: {
     backgroundColor: COLORS.primary700,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    padding: 12,
     elevation: 4,
   },
   buttonText: {
